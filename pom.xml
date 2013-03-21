@@ -22,7 +22,7 @@
         <groupId>org.greenbird</groupId>
         <artifactId>greenbird-os-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath/>
+        <relativePath>parent-pom.xml</relativePath>
     </parent>
 
 
