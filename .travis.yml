@@ -3,5 +3,5 @@ jdk:
   - oraclejdk7
   - openjdk7
   - openjdk6
-install: mvn -v
-script: mvn clean install
+install: mvn -U --quiet dependency:resolve
+script:  mvn -U clean install
