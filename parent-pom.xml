@@ -16,26 +16,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-
-    <name>greenbird OS parent pom</name>
-    <url>http://www.greenbird.com</url>
-
-    <groupId>org.greenbird</groupId>
-    <artifactId>greenbird-os-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
     <modelVersion>4.0.0</modelVersion>
 
-    <packaging>pom</packaging>
-
+    <name>greenbird OS parent pom</name>
     <description>
         Parent POM for greenbird OS projects. Adds dependency and plugin management and defines common properties.
     </description>
+    <url>https://github.com/greenbird/greenbird-os-parent-pom</url>
+
+    <groupId>com.greenbird</groupId>
+    <artifactId>greenbird-os-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
 
     <organization>
         <name>greenbird Integration Technology</name>
         <url>http://www.greenbird.com</url>
     </organization>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <properties>
         <!-- Project configuration -->
@@ -84,6 +90,7 @@
     </properties>
 
     <scm>
+        <url>https://github.com/greenbird/greenbird-os-parent-pom</url>
         <connection>scm:git:git@github.com:greenbird/greenbird-os-parent-pom.git</connection>
     </scm>
 
@@ -96,6 +103,13 @@
         <system>Travis</system>
         <url>https://travis-ci.org/greenbird/greenbird-os-parent-pom</url>
     </ciManagement>
+    
+    <developers>
+        <developer>
+            <name>Christian Nedregård</name>
+            <email>christian.nedregaard@greenbird.com</email>
+        </developer>
+    </developers>
 
     <dependencyManagement>
         <dependencies>

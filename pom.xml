@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.greenbird</groupId>
+        <groupId>com.greenbird</groupId>
         <artifactId>greenbird-os-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>parent-pom.xml</relativePath>
@@ -28,14 +28,31 @@
 
     <name>Greenbird Mule access log library</name>
     <description>Library that enables standard access logging from Mule HTTP inbound endpoints.</description>
+    <url>https://github.com/greenbird/mule-access-log</url>
 
-    <groupId>org.greenbird.mule</groupId>
+    <groupId>com.greenbird.mule</groupId>
     <artifactId>greenbird-mule-access-log</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <licenses>
+      <license>
+        <name>The Apache Software License, Version 2.0</name>
+        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        <distribution>repo</distribution>
+      </license>
+    </licenses>
+    
     <scm>
+        <url>https://github.com/greenbird/mule-access-log</url>
         <connection>scm:git:git@github.com:greenbird/mule-access-log.git</connection>
     </scm>
+
+    <developers>
+        <developer>
+            <name>Christian Nedregård</name>
+            <email>christian.nedregaard@greenbird.com</email>
+        </developer>
+    </developers>
 
     <dependencies>
         <dependency>
