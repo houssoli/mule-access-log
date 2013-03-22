@@ -10,7 +10,24 @@ License
 
 Obtain
 ------
-The project is based on [Maven] but is currently not available on any public repository so you need to clone it and build it locally. 
+The project is based on [Maven]. Project snapshots are available from the Sonatype OSS snapshot repository:
+https://oss.sonatype.org/content/repositories/snapshots/.
+
+Example dependency config:
+
+```xml
+<dependency>
+    <groupId>com.greenbird.mule</groupId>
+    <artifactId>greenbird-mule-access-log</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+```
+
+When the project is released the artifacts will be deployed to the central Maven repository.
+
+You can also download the jars directly if you need too:
+
+Snapshots: https://oss.sonatype.org/content/repositories/snapshots/com/greenbird/mule/greenbird-mule-access-log/
 
 Include the jar as a runtime dependency for your project and you're ready to go.
 
