@@ -5,3 +5,13 @@ jdk:
   - openjdk6
 install: mvn -U --quiet dependency:resolve
 script:  mvn -U clean install
+
+env:
+  global:
+    - SONATYPE_USERNAME=greenbird
+    # Sonatype password - see http://tinyurl.com/cgbzr4f
+    - secure: "HRA/QSGo4o+dQ82kQ0C8gM49Yq4WbiYQ9S5YxZ2oUHsutv52iUuhl7ANxOW+\nu+Co4BjU95MbAc63bQdJZqt7u98BuhcmYlO+auaFZ0i1P/nLDC6QGOL3olW5\nzXPn4FpHUxvEKGGD332vnlkpOcXjoy6a0OrneJipAB+YvQdEy6E="
+    
+after_success:
+- python src/main/resources/addServer.py
+- mvn deploy --settings ~/.m2/mySettings.xml
