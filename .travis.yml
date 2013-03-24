@@ -3,7 +3,7 @@ jdk:
   - oraclejdk7
   - openjdk7
   - openjdk6
-install: mvn clean validate -P deployment-preparation
+install: mvn clean validate -U -q -P deployment-preparation
 script:  mvn deploy --settings target/settings/settings.xml
 
 env:
