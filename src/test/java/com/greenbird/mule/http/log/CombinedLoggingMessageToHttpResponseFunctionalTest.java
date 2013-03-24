@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.greenbird.mule.http.log;
+package com.greenbird.mule.http.log;
 
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mule.tck.junit4.FunctionalTestCase;
 import org.mule.transport.http.HttpConstants;
-import sun.misc.BASE64Encoder;
+import org.springframework.security.crypto.codec.Base64;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -50,7 +50,7 @@ public class CombinedLoggingMessageToHttpResponseFunctionalTest extends Function
 
     @Before
     public void setUp() {
-        testLogAppender = new TestLogAppender("http.accesslog");
+        testLogAppender = new TestLogAppender(CombinedLoggingMessageToHttpResponse.ACCESS_LOG_CATEGORY);
     }
 
     @After
@@ -60,7 +60,7 @@ public class CombinedLoggingMessageToHttpResponseFunctionalTest extends Function
 
     @Test
     public void getRequest_securedResourceAccessGranted_expectedValuesAreLogged() throws Exception {
-        String credentials = new BASE64Encoder().encode("admin:adminPw".getBytes());
+        String credentials = new String(Base64.encode("testUser:testPw".getBytes()), "UTF-8");
         String request = "/securedTestPath?testParam=testParamValue";
         int status = 200;
 
@@ -71,11 +71,11 @@ public class CombinedLoggingMessageToHttpResponseFunctionalTest extends Function
         connection.connect();
         assertThat(connection.getResponseCode(), is(status));
 
-        assertOnLogEntry("admin", request, status, String.valueOf("Authenticated test body".length()), "http://test.com");
+        assertOnLogEntry("testUser", request, status, String.valueOf("Authenticated test body".length()), "http://test.com");
     }
 
     @Test
-    public void getRequest_securedResourceAccessNot_expectedValuesAreLogged() throws Exception {
+    public void getRequest_securedResourceAccessNotGranted_expectedValuesAreLogged() throws Exception {
         String request = "/securedTestPath?testParam=testParamValue";
         int status = 401;
 

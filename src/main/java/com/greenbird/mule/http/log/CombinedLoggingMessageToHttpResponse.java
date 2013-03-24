@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.greenbird.mule.http.log;
+package com.greenbird.mule.http.log;
 
 import org.mule.RequestContext;
 import org.mule.api.MuleMessage;
@@ -45,7 +45,9 @@ import static java.lang.String.format;
  */
 public class CombinedLoggingMessageToHttpResponse extends MuleMessageToHttpResponse {
     public static final String DATE_FORMAT = "dd/MMM/yyyy:HH:mm:ss Z";
-    private Logger logger = LoggerFactory.getLogger("http.accesslog");
+    public static final String ACCESS_LOG_CATEGORY = "http.accesslog";
+
+    private Logger logger = LoggerFactory.getLogger(ACCESS_LOG_CATEGORY);    
 
     @Override
     public Object transformMessage(MuleMessage message, String outputEncoding) throws TransformerException {

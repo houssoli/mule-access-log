@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.greenbird.mule.http.log;
+package com.greenbird.mule.http.log;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;

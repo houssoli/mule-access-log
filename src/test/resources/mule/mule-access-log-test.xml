@@ -15,31 +15,28 @@
   ~ limitations under the License.
   -->
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:http="http://www.mulesoft.org/schema/mule/http"
-      xmlns:s="http://www.springframework.org/schema/beans"
-      xmlns:mule-ss="http://www.mulesoft.org/schema/mule/spring-security"
-      xmlns:ss="http://www.springframework.org/schema/security"
-      xmlns:context="http://www.springframework.org/schema/context"
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns         = "http://www.mulesoft.org/schema/mule/core"
+      xmlns:http    = "http://www.mulesoft.org/schema/mule/http"
+      xmlns:mule-ss = "http://www.mulesoft.org/schema/mule/spring-security"
+      xmlns:s       = "http://www.springframework.org/schema/beans"
+      xmlns:ss      = "http://www.springframework.org/schema/security"
       xsi:schemaLocation="
         http://www.mulesoft.org/schema/mule/core            http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/http            http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-        http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans.xsd
-       	http://www.springframework.org/schema/context       http://www.springframework.org/schema/context/spring-context.xsd
         http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd
+        http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/security      http://www.springframework.org/schema/security/spring-security.xsd
       ">
 
     <http:connector name="loggingHttpConnector">
-        <service-overrides responseTransformer="org.greenbird.mule.http.log.CombinedLoggingMessageToHttpResponse"/>
+        <service-overrides responseTransformer="com.greenbird.mule.http.log.CombinedLoggingMessageToHttpResponse"/>
     </http:connector>
 
     <flow name="test-flow">
-        <http:inbound-endpoint address="http://localhost:6428/testPath" user="testUser" password="dingo"/>
+        <http:inbound-endpoint address="http://localhost:6428/testPath"/>
         <set-payload value="Test body"/>
     </flow>
-
 
     <flow name="secured-test-flow">
         <inbound-endpoint address="http://localhost:6428/securedTestPath">
@@ -56,15 +53,9 @@
         <ss:authentication-manager alias="authenticationManager">
             <ss:authentication-provider>
                 <ss:user-service id="userService">
-                    <ss:user name="admin" password="adminPw" authorities="ROLE_ADMIN"/>
-                    <ss:user name="anon" password="anon" authorities="ROLE_ANON"/>
+                    <ss:user name="testUser" password="testPw" authorities="ROLE_ANON"/>
                 </ss:user-service>
             </ss:authentication-provider>
         </ss:authentication-manager>
     </s:beans>
-
-    <s:beans>
-        <context:component-scan base-package="com.greenbird.mule.core"/>
-    </s:beans>
-
 </mule>
