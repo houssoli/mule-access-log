@@ -1,8 +1,5 @@
 language: java
-jdk:
-  - oraclejdk7
-  - openjdk7
-  - openjdk6
+jdk: oraclejdk7
 install: mvn clean validate -U -q -P deployment-preparation
 script:  mvn deploy --settings target/settings/settings.xml
 
