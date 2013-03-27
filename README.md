@@ -11,8 +11,7 @@ understood by most web log analysis tools.
 [Apache 2.0]
 
 ## Obtain
-The project is based on [Maven]. Project snapshots are available from the Sonatype OSS snapshot repository:
-https://oss.sonatype.org/content/repositories/snapshots/.
+The project is based on [Maven] and available on the central Maven repository.
 
 Example dependency config:
 
@@ -20,15 +19,13 @@ Example dependency config:
 <dependency>
     <groupId>com.greenbird.mule</groupId>
     <artifactId>greenbird-mule-access-log</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 </dependency>
 ```
 
-When the project is released the artifacts will be deployed to the central Maven repository.
+You can also [download] the jars directly if you need too.
 
-You can also download the jars directly if you need too:
-
-Snapshots: https://oss.sonatype.org/content/repositories/snapshots/com/greenbird/mule/greenbird-mule-access-log/
+Snapshot builds are available from the Sonatype OSS [snapshot repository].
 
 Include the jar as a runtime dependency for your project and you're ready to go.
 
@@ -161,10 +158,11 @@ log4j.appender.accessLog.append=true
 [Apache combined log format]: http://httpd.apache.org/docs/1.3/logs.html#combined
 [Apache common log format]:   http://httpd.apache.org/docs/1.3/logs.html#common
 [issues]:                     https://github.com/greenbird/mule-access-log/issues
+[download]:                   http://search.maven.org/#search|ga|1|greenbird-mule-access-log
 [HTTP endpoints]:             www.mulesoft.org/documentation/display/current/HTTP+Transport+Reference
 [Maven]:                      http://maven.apache.org/
 [Mule ESB]:                   http://www.mulesoft.org/
 [Mule log configuration]:     http://www.mulesoft.org/documentation/display/current/Logging+With+Mule+ESB+3.x
 [PatternLayout]:              http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html
-
+[snapshot repository]:        https://oss.sonatype.org/content/repositories/snapshots/com/greenbird/mule/greenbird-mule-access-log
 
