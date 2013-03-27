@@ -28,6 +28,7 @@ import java.util.List;
  */
 public class TestLogAppender extends NullAppender {
     private List<LoggingEvent> loggingEvents = new ArrayList<LoggingEvent>();
+    private List<String> logLines = new ArrayList<String>();
 
     public TestLogAppender(Class<?> loggerClass) {
         this(loggerClass.getName());
@@ -40,6 +41,11 @@ public class TestLogAppender extends NullAppender {
     @Override
     public void doAppend(LoggingEvent event) {
         loggingEvents.add(event);
+        if (layout != null) {
+            logLines.add(layout.format(event));
+        } else {
+            logLines.add(event.getRenderedMessage());
+        }
     }
 
     public List<LoggingEvent> getLoggingEvents() {
@@ -48,6 +54,12 @@ public class TestLogAppender extends NullAppender {
 
     public void close() {
         loggingEvents.clear();
+        logLines.clear();
+        setLayout(null);
         Logger.getRootLogger().removeAppender(this);
+    }
+
+    public List<String> getLogLines() {
+        return logLines;
     }
 }

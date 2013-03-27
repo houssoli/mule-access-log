@@ -30,7 +30,7 @@
       ">
 
     <http:connector name="loggingHttpConnector">
-        <service-overrides responseTransformer="com.greenbird.mule.http.log.CombinedLoggingMessageToHttpResponse"/>
+        <service-overrides responseTransformer="com.greenbird.mule.http.log.transformer.AccessLoggingMessageToHttpResponse"/>
     </http:connector>
 
     <flow name="test-flow">

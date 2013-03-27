@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package com.greenbird.mule.http.log;
+package com.greenbird.mule.http.log.layout;
 
+import com.greenbird.mule.http.log.TestLogAppender;
+import com.greenbird.mule.http.log.transformer.AccessLoggingMessageToHttpResponse;
+import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +39,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
-public class CombinedLoggingMessageToHttpResponseFunctionalTest extends FunctionalTestCase {
+public class AccessLoggerPatternLayoutFunctionalTest extends FunctionalTestCase {
     private static final String REFERRER = "http://test.com";
     private static final String BASE_URL = "http://localhost:6428";
     private static final String CLIENT_IP = "127.0.0.1";
@@ -50,7 +53,8 @@ public class CombinedLoggingMessageToHttpResponseFunctionalTest extends Function
 
     @Before
     public void setUp() {
-        testLogAppender = new TestLogAppender(CombinedLoggingMessageToHttpResponse.ACCESS_LOG_CATEGORY);
+        testLogAppender = new TestLogAppender(AccessLoggingMessageToHttpResponse.ACCESS_LOG_CATEGORY);
+        testLogAppender.setLayout(new CombinedAccessLogPatternLayout());
     }
 
     @After
@@ -109,7 +113,7 @@ public class CombinedLoggingMessageToHttpResponseFunctionalTest extends Function
 
         String time = entry.getTime();
         //will throw exception if date is malformed
-        new SimpleDateFormat(CombinedLoggingMessageToHttpResponse.DATE_FORMAT).parse(time);
+        new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z").parse(time);
 
         assertThat(entry.getRequest(), is("GET " + expectedRequest + " HTTP/1.1"));
         assertThat(entry.getStatus(), is(String.valueOf(expectedStatus)));
@@ -121,7 +125,8 @@ public class CombinedLoggingMessageToHttpResponseFunctionalTest extends Function
     private LogEntry parseLogEntry() throws IOException {
         List<LoggingEvent> loggingEvents = testLogAppender.getLoggingEvents();
         assertThat(loggingEvents.size(), is(1));
-        String accessLine = loggingEvents.get(0).getRenderedMessage();
+        assertThat(loggingEvents.get(0).getLevel(), is(Level.INFO));
+        String accessLine = testLogAppender.getLogLines().get(0);
         return new LogEntry(accessLine);
     }
 
@@ -130,7 +135,7 @@ public class CombinedLoggingMessageToHttpResponseFunctionalTest extends Function
     }
 
     private static class LogEntry {
-        private static final Pattern LOG_PATTERN = Pattern.compile("^(.*?) - (.*?) \\[(.*?)\\] \"(.*?)\" (\\d{3}) (\\d+|-) (\".*?\"|-) (\".*?\"|-)$");
+        private static final Pattern LOG_PATTERN = Pattern.compile("^(.*?) - (.*?) \\[(.*?)\\] \"(.*?)\" (\\d{3}) (\\d+|-) (\".*?\"|-) (\".*?\"|-)\n$");
         private String clientIp;
         private String userId;
         private String time;
