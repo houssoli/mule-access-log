@@ -20,6 +20,7 @@ Example dependency config:
     <groupId>com.greenbird.mule</groupId>
     <artifactId>greenbird-mule-access-log</artifactId>
     <version>1.0</version>
+    <scope>runtime</scope>
 </dependency>
 ```
 
@@ -43,7 +44,25 @@ This is done on the http connector level like this:
 
 This will ensure that the HTTP message is logged to the http.accesslog category on the INFO level.
 
-### 2. Configure the http.accesslog log category
+### (2. Replace the HTTP message factory)
+The logger depends on some inbound properties that the HTTP connector sets on the message.
+
+In some cases these properties will be removed or overwritten. For example: If you have a HTTP outbound endpoint in
+your flow the endpoint will replace the original Mule message with a newly created response message. This results in
+all the inbound properties being lost.
+
+If you see that vital information such as method or path is missing from the log you need to override the regular 
+HttpMuleMessageFactory with our subclass RequestPropertiesRetainingHttpMuleMessageFactory:
+
+```xml
+<http:connector name="loggingHttpConnector">
+    <service-overrides
+      messageFactory="com.greenbird.mule.http.log.factory.RequestPropertiesRetainingHttpMuleMessageFactory"
+      responseTransformer="com.greenbird.mule.http.log.transformer.AccessLoggingMessageToHttpResponse"/>
+</http:connector>
+``` 
+
+### 3. Configure the http.accesslog log category
 Update your [Mule log configuration] with a http.accesslog category that is written to a separate file.
 
 Example log4j.properties fragment:
@@ -59,7 +78,7 @@ log4j.appender.accessLog.MaxBackupIndex=10
 log4j.appender.accessLog.append=true
 ```
 
-### 3. Configure the log appender layout
+### 4. Configure the log appender layout
 We currently provide three layouts:
 * <b>com.greenbird.mule.http.log.layout.CombinedAccessLogPatternLayout</b>: Produces log lines on the [Apache combined log format].
 * <b>com.greenbird.mule.http.log.layout.CommonAccessLogPatternLayout</b>: Produces log lines on the [Apache common log format].
@@ -79,7 +98,7 @@ log4j.appender.accessLog.MaxBackupIndex=10
 log4j.appender.accessLog.append=true
 ```
 
-### (4. Configure the AccessLoggerPatternLayout)
+### (5. Configure the AccessLoggerPatternLayout)
 If you are using one of the predefined layouts you are done. If you are using the AccessLoggerPatternLayout you now
 need to configure the conversion pattern for your log lines.
 

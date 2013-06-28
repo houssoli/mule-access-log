@@ -16,7 +16,7 @@
 
 package com.greenbird.mule.http.log.transformer;
 
-import com.greenbird.mule.http.log.converter.AccessLogConverterTestBase;
+import com.greenbird.mule.http.log.AccessLogConverterTestBase;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
