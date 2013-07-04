@@ -22,10 +22,9 @@
     <parent>
         <groupId>com.greenbird</groupId>
         <artifactId>greenbird-os-parent</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <version>1.1.0</version>
         <relativePath/>
     </parent>
-
 
     <name>Greenbird Mule access log library</name>
     <description>Library that enables standard access logging from Mule HTTP inbound endpoints.</description>
@@ -83,10 +82,6 @@
         <dependency>
             <groupId>org.mule.transports</groupId>
             <artifactId>mule-transport-http</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.transports</groupId>
-            <artifactId>mule-transport-tcp</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
