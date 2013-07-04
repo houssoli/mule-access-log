@@ -17,8 +17,10 @@
 package com.greenbird.mule.http.log.converter;
 
 import com.greenbird.mule.http.log.AccessLogConverterTestBase;
+import org.apache.commons.httpclient.StatusLine;
 import org.junit.Test;
 import org.mule.transport.http.HttpConnector;
+import org.mule.transport.http.HttpResponse;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -27,9 +29,16 @@ public class ProtocolVersionConverterTest extends AccessLogConverterTestBase {
     private static final String VERSION = "HTTP/1.1";
 
     @Test
-    public void doConvert_versionAvailable_versionUsed() {
+    public void doConvert_versionPropertyAvailable_propertyUsed() {
         String logOutput = logWithInboundProperty(ProtocolVersionConverter.CONVERSION_CHARACTER,
                 HttpConnector.HTTP_VERSION_PROPERTY, VERSION);
+        assertThat(logOutput, is(VERSION));
+    }
+
+    @Test
+    public void doConvert_versionAvailableInResponse_versionInReplyUsed() {
+        HttpResponse response = new HttpResponse();
+        String logOutput = logWithPayload(ProtocolVersionConverter.CONVERSION_CHARACTER, response);
         assertThat(logOutput, is(VERSION));
     }
 

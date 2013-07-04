@@ -19,6 +19,7 @@ package com.greenbird.mule.http.log.converter;
 import org.apache.log4j.helpers.FormattingInfo;
 import org.mule.api.MuleMessage;
 import org.mule.transport.http.HttpConnector;
+import org.mule.transport.http.HttpResponse;
 
 public class ProtocolVersionConverter extends AbstractAccessLogConverter {
     public final static char CONVERSION_CHARACTER = 'H';
@@ -29,6 +30,10 @@ public class ProtocolVersionConverter extends AbstractAccessLogConverter {
 
     @Override
     protected String doConvert(MuleMessage message) {
-        return getProperty(HttpConnector.HTTP_VERSION_PROPERTY, message);
+        String version = getProperty(HttpConnector.HTTP_VERSION_PROPERTY, message);
+        if(version == null && message.getPayload() instanceof HttpResponse) {
+            version = ((HttpResponse)message.getPayload()).getHttpVersion().toString();
+        }
+        return version;
     }
 }

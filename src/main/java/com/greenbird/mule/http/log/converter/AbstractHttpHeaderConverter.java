@@ -35,9 +35,6 @@ public abstract class AbstractHttpHeaderConverter extends AbstractAccessLogConve
         String result = null;
         if (headers != null) {
             result = convertFromHeaders(headers);
-        } else {
-            notifyError(String.format("Expected HTTP headers on inbound property %s, but found none.", 
-                    HttpConnector.HTTP_HEADERS));
         }
         return result;
     }

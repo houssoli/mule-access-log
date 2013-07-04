@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package com.greenbird.mule.http.log.factory;
+package com.greenbird.mule.http.log;
 
-import org.mule.DefaultMuleMessage;
-import org.mule.api.MuleContext;
+import org.mule.api.MuleMessage;
 import org.mule.api.config.MuleProperties;
 import org.mule.transport.http.HttpConnector;
-import org.mule.transport.http.HttpMuleMessageFactory;
-import org.mule.transport.http.HttpRequest;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class RequestPropertiesRetainingHttpMuleMessageFactory extends HttpMuleMessageFactory {
-    public static final String INITIAL_REQUEST_PROPERTY = RequestPropertiesRetainingHttpMuleMessageFactory.class.getName() + ".initialRequestProperties";
+public class RequestPropertiesRetainer {
+    public static final String INITIAL_REQUEST_PROPERTY = RequestPropertiesRetainer.class.getName() + ".initialRequestProperties";
     private static final String[] PROPERTIES_TO_RETAIN = new String[]{
             HttpConnector.HTTP_HEADERS,
             HttpConnector.HTTP_METHOD_PROPERTY,
@@ -38,14 +35,8 @@ public class RequestPropertiesRetainingHttpMuleMessageFactory extends HttpMuleMe
             MuleProperties.MULE_REMOTE_CLIENT_ADDRESS
     };
 
-    public RequestPropertiesRetainingHttpMuleMessageFactory(MuleContext context) {
-        super(context);
-    }
-
-    @Override
-    protected void addProperties(DefaultMuleMessage message, Object transportMessage) throws Exception {
-        super.addProperties(message, transportMessage);
-        if (transportMessage instanceof HttpRequest && message.getInvocationProperty(INITIAL_REQUEST_PROPERTY) == null) {
+    public void retainRequestProperties(MuleMessage message) {
+        if (message.getInvocationProperty(INITIAL_REQUEST_PROPERTY) == null) {
             Map<String, Object> retainedProperties = new HashMap<String, Object>(PROPERTIES_TO_RETAIN.length);
             for (String property : PROPERTIES_TO_RETAIN) {
                 retainedProperties.put(property, message.getInboundProperty(property));

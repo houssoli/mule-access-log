@@ -23,7 +23,7 @@ package com.greenbird.mule.http.log.layout;
  * This format is understood by most web log analysis tools.
  */
 public class CommonAccessLogPatternLayout extends AccessLoggerPatternLayout {
-    public static final String PATTERN = "%h{-} - %u{-} [%d{dd/MMM/yyyy:HH:mm:ss Z}] \"%e %U%q %H\" %s{-} %b{-}%n";
+    public static final String PATTERN = "%h{-} - %u{-} [%d{dd/MMM/yyyy:HH:mm:ss Z}] \"%e{-} %U%q %H\" %s{-} %b{-}%n";
 
     public CommonAccessLogPatternLayout() {
         super(PATTERN);

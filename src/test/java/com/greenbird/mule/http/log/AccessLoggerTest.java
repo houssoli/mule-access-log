@@ -14,34 +14,29 @@
  * limitations under the License.
  */
 
-package com.greenbird.mule.http.log.transformer;
+package com.greenbird.mule.http.log;
 
-import com.greenbird.mule.http.log.AccessLogConverterTestBase;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.mule.api.MuleMessage;
 import org.mule.api.transformer.TransformerException;
-import org.mule.transport.http.HttpResponse;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public class AccessLoggingMessageToHttpResponseTest extends AccessLogConverterTestBase {
-    private AccessLoggingMessageToHttpResponse transformer = new AccessLoggingMessageToHttpResponse();
+public class AccessLoggerTest extends AccessLogConverterTestBase {
+    private AccessLogger logger = new AccessLogger();
 
     @Test
-    public void transformMessage_success_messageContainingTheResponseLoggedToTheAccessLogCategory() throws TransformerException {
+    public void logMessage_success_messageContainingTheResponseLoggedToTheAccessLogCategory() throws TransformerException {
         MuleMessage expectedMessage = testMessage();
-        HttpResponse expectedResponse = (HttpResponse) transformer.transformMessage(expectedMessage, null);
-        assertThat(expectedResponse, is(notNullValue()));
+        logger.log(expectedMessage);
+
         assertThat(logAppender().getLoggingEvents().size(), is(1));
         LoggingEvent logEvent = logAppender().getLoggingEvents().get(0);
         assertThat(logEvent.getLevel(), is(Level.INFO));
         MuleMessage actualMessage = (MuleMessage) logEvent.getMessage();
         assertThat(actualMessage, is(expectedMessage));
-        HttpResponse actualResponse = (HttpResponse) actualMessage.getPayload();
-        assertThat(actualResponse, is(expectedResponse));
     }
 }

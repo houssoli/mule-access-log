@@ -16,7 +16,7 @@
 
 package com.greenbird.mule.http.log.converter;
 
-import com.greenbird.mule.http.log.factory.RequestPropertiesRetainingHttpMuleMessageFactory;
+import com.greenbird.mule.http.log.RequestPropertiesRetainer;
 import org.apache.log4j.helpers.FormattingInfo;
 import org.apache.log4j.helpers.PatternConverter;
 import org.apache.log4j.spi.LoggingEvent;
@@ -80,7 +80,7 @@ public abstract class AbstractAccessLogConverter extends PatternConverter {
     protected <T> T getProperty(String propertyName, MuleMessage message) {
         Object value = null;
         Map<String, Object> retainedProperties =
-                message.getInvocationProperty(RequestPropertiesRetainingHttpMuleMessageFactory.INITIAL_REQUEST_PROPERTY);
+                message.getInvocationProperty(RequestPropertiesRetainer.INITIAL_REQUEST_PROPERTY);
         if (retainedProperties != null) {
             value = retainedProperties.get(propertyName);
         }

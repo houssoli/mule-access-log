@@ -16,26 +16,40 @@
   -->
 
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns         = "http://www.mulesoft.org/schema/mule/core"
-      xmlns:http    = "http://www.mulesoft.org/schema/mule/http"
-      xmlns:mule-ss = "http://www.mulesoft.org/schema/mule/spring-security"
-      xmlns:s       = "http://www.springframework.org/schema/beans"
-      xmlns:ss      = "http://www.springframework.org/schema/security"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:https="http://www.mulesoft.org/schema/mule/https"
+      xmlns:mule-ss="http://www.mulesoft.org/schema/mule/spring-security"
+      xmlns:s="http://www.springframework.org/schema/beans"
+      xmlns:ss="http://www.springframework.org/schema/security"
       xsi:schemaLocation="
         http://www.mulesoft.org/schema/mule/core            http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/http            http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/https            http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd
         http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd
         http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/security      http://www.springframework.org/schema/security/spring-security.xsd
       ">
 
     <http:connector name="loggingHttpConnector">
-        <service-overrides responseTransformer="com.greenbird.mule.http.log.transformer.AccessLoggingMessageToHttpResponse"/>
+        <service-overrides messageReceiver="com.greenbird.mule.http.log.AccessLoggingHttpMessageReceiver"/>
     </http:connector>
+
+    <https:connector name="loggingHttpsConnector" validateConnections="true">
+        <service-overrides messageReceiver="com.greenbird.mule.http.log.AccessLoggingHttpsMessageReceiver"/>
+        <https:tls-key-store path="server-keystore.jks" keyPassword="testPw" storePassword="testPw"/>
+    </https:connector>
+
 
     <flow name="test-flow">
         <http:inbound-endpoint address="http://localhost:6428/testPath"/>
         <set-payload value="Test body"/>
+    </flow>
+
+    <flow name="test-flow-with-response-transformer">
+        <http:inbound-endpoint address="http://localhost:6428/responseTransformedTestPath"/>
+        <set-payload value="Test body with transformed response"/>
+        <http:response-builder/>
     </flow>
 
     <flow name="secured-test-flow">
@@ -43,6 +57,28 @@
             <mule-ss:http-security-filter realm="mule-realm"/>
         </inbound-endpoint>
         <set-payload value="Authenticated test body"/>
+    </flow>
+
+    <flow name="with-outbound-endpoint-test-flow">
+        <http:inbound-endpoint address="http://localhost:6428/testPathWithOutboundEndpoint"/>
+        <outbound-endpoint address="vm://vmEndpoint" exchange-pattern="request-response"/>
+    </flow>
+
+    <flow name="vm-test-endpoint">
+        <inbound-endpoint address="vm://vmEndpoint" exchange-pattern="request-response"/>
+        <set-payload value="Test body via endpoint"/>
+    </flow>
+
+    <flow name="exception-test-flow">
+        <http:inbound-endpoint address="http://localhost:6428/exceptionPath"/>
+        <expression-component>
+            null.equals('a')
+        </expression-component>
+    </flow>
+
+    <flow name="https-test-flow">
+        <https:inbound-endpoint address="https://localhost:6429/httpsPath"/>
+        <set-payload value="Test body via HTTPS"/>
     </flow>
 
     <mule-ss:security-manager>

@@ -17,7 +17,6 @@
 package com.greenbird.mule.http.log;
 
 import com.greenbird.mule.http.log.layout.AccessLoggerPatternLayout;
-import com.greenbird.mule.http.log.transformer.AccessLoggingMessageToHttpResponse;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
@@ -46,8 +45,8 @@ public abstract class AccessLogConverterTestBase {
 
     @Before
     public void setUpLogger() {
-        testLogAppender = new TestLogAppender(AccessLoggingMessageToHttpResponse.ACCESS_LOG_CATEGORY);
-        logger = Logger.getLogger(AccessLoggingMessageToHttpResponse.ACCESS_LOG_CATEGORY);
+        testLogAppender = new TestLogAppender(AccessLogger.ACCESS_LOG_CATEGORY);
+        logger = Logger.getLogger(AccessLogger.ACCESS_LOG_CATEGORY);
     }
 
     @Before

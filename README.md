@@ -32,37 +32,21 @@ Include the jar as a runtime dependency for your project and you're ready to go.
 
 ## Usage
 
-### 1. Replace the HTTP response transformer
-Replace the the regular MuleMessageToHttpResponse transformer with our subclass AccessLoggingMessageToHttpResponse.
+### 1. Replace the HTTP message receiver
+Replace the the default HttpMessageReceiver with our subclass AccessLoggingHttpMessageReceiver.
 
 This is done on the http connector level like this:
 ```xml
 <http:connector name="loggingHttpConnector">
-    <service-overrides responseTransformer="com.greenbird.mule.http.log.transformer.AccessLoggingMessageToHttpResponse"/>
+    <service-overrides messageReceiver="com.greenbird.mule.http.log.AccessLoggingHttpMessageReceiver"/>
 </http:connector>
 ``` 
 
 This will ensure that the HTTP message is logged to the http.accesslog category on the INFO level.
 
-### (2. Replace the HTTP message factory)
-The logger depends on some inbound properties that the HTTP connector sets on the message.
+Use the com.greenbird.mule.http.log.AccessLoggingHttpsMessageReceiver instead if you are working with the https connector.
 
-In some cases these properties will be removed or overwritten. For example: If you have a HTTP outbound endpoint in
-your flow the endpoint will replace the original Mule message with a newly created response message. This results in
-all the inbound properties being lost.
-
-If you see that vital information such as method or path is missing from the log you need to override the regular 
-HttpMuleMessageFactory with our subclass RequestPropertiesRetainingHttpMuleMessageFactory:
-
-```xml
-<http:connector name="loggingHttpConnector">
-    <service-overrides
-      messageFactory="com.greenbird.mule.http.log.factory.RequestPropertiesRetainingHttpMuleMessageFactory"
-      responseTransformer="com.greenbird.mule.http.log.transformer.AccessLoggingMessageToHttpResponse"/>
-</http:connector>
-``` 
-
-### 3. Configure the http.accesslog log category
+### 2. Configure the http.accesslog log category
 Update your [Mule log configuration] with a http.accesslog category that is written to a separate file.
 
 Example log4j.properties fragment:
@@ -78,7 +62,7 @@ log4j.appender.accessLog.MaxBackupIndex=10
 log4j.appender.accessLog.append=true
 ```
 
-### 4. Configure the log appender layout
+### 3. Configure the log appender layout
 We currently provide three layouts:
 * <b>com.greenbird.mule.http.log.layout.CombinedAccessLogPatternLayout</b>: Produces log lines on the [Apache combined log format].
 * <b>com.greenbird.mule.http.log.layout.CommonAccessLogPatternLayout</b>: Produces log lines on the [Apache common log format].
@@ -98,7 +82,7 @@ log4j.appender.accessLog.MaxBackupIndex=10
 log4j.appender.accessLog.append=true
 ```
 
-### (5. Configure the AccessLoggerPatternLayout)
+### (4. Configure the AccessLoggerPatternLayout)
 If you are using one of the predefined layouts you are done. If you are using the AccessLoggerPatternLayout you now
 need to configure the conversion pattern for your log lines.
 
@@ -167,12 +151,20 @@ log4j.appender.accessLog=org.apache.log4j.RollingFileAppender
 log4j.appender.accessLog.File=${mule.home}/logs/http-access.log
 # set layout and pattern
 log4j.appender.accessLog.layout=com.greenbird.mule.http.log.layout.AccessLoggerPatternLayout
-log4j.appender.accessLog.layout.ConversionPattern=%h{-} - %u{-} [%d{dd/MMM/yyyy:HH:mm:ss Z}] "%e %U%q %H" %s{-} %b{-} %f{-;qt} %a{-;qt}%n
+log4j.appender.accessLog.layout.ConversionPattern="%h{-} - %u{-} [%d{dd/MMM/yyyy:HH:mm:ss Z}] "%e{-} %U%q %H" %s{-} %b{-} %f{-;qt} %a{-;qt}%n
 log4j.appender.accessLog.MaxFileSize=10MB
 log4j.appender.accessLog.MaxBackupIndex=10
 log4j.appender.accessLog.append=true
 ```
- 
+
+## Caveats
+The logger depends on message properties added by the default Mule http components. In some cases the 
+processing is interrupted before some of these properties are set leading to missing log entry elements.
+
+E.g.: A requests for a path that has no associated endpoint will be terminated before any message processing is performed.
+In this case only the date, the path and the status (404 - Not Found) will be logged. Important data such as the remote host
+and HTTP method will be missing.
+
 [Apache 2.0]:                 http://www.apache.org/licenses/LICENSE-2.0.html
 [Apache combined log format]: http://httpd.apache.org/docs/1.3/logs.html#combined
 [Apache common log format]:   http://httpd.apache.org/docs/1.3/logs.html#common

@@ -17,7 +17,7 @@
 package com.greenbird.mule.http.log.converter;
 
 import com.greenbird.mule.http.log.AccessLogConverterTestBase;
-import com.greenbird.mule.http.log.factory.RequestPropertiesRetainingHttpMuleMessageFactory;
+import com.greenbird.mule.http.log.RequestPropertiesRetainer;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.DefaultMuleMessage;
@@ -100,7 +100,7 @@ public class AbstractAccessLogConverterTest extends AccessLogConverterTestBase {
     public void getProperty_valueOnlyStoredInRetainedProperties_valueIsUsed() {
         Map<String, Object> retainedProperties = new HashMap<String, Object>();
         retainedProperties.put(HttpConnector.HTTP_REQUEST_PATH_PROPERTY, PATH);
-        message.setInvocationProperty(RequestPropertiesRetainingHttpMuleMessageFactory.INITIAL_REQUEST_PROPERTY, 
+        message.setInvocationProperty(RequestPropertiesRetainer.INITIAL_REQUEST_PROPERTY, 
                 retainedProperties);
         String logOutput = log("%U{default}", message);
         assertThat(logOutput, is(PATH));

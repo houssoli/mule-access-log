@@ -14,27 +14,19 @@
  * limitations under the License.
  */
 
-package com.greenbird.mule.http.log.transformer;
+package com.greenbird.mule.http.log;
 
 import org.apache.log4j.Logger;
 import org.mule.api.MuleMessage;
-import org.mule.api.transformer.TransformerException;
-import org.mule.transport.http.HttpResponse;
-import org.mule.transport.http.transformers.MuleMessageToHttpResponse;
 
 /**
- * Transformer that extends the regular {@code MuleMessageToHttpResponse} by logging the transformed message containing
- * the http response.
+ * Logger that logs the transformed message containing the http response to the access log category.
  */
-public class AccessLoggingMessageToHttpResponse extends MuleMessageToHttpResponse {
+public class AccessLogger {
     public static final String ACCESS_LOG_CATEGORY = "http.accesslog";
     private Logger logger = Logger.getLogger(ACCESS_LOG_CATEGORY);
 
-    @Override
-    public Object transformMessage(MuleMessage message, String outputEncoding) throws TransformerException {
-        HttpResponse response = (HttpResponse) super.transformMessage(message, outputEncoding);
-        message.setPayload(response);
+    public void log(MuleMessage message) {
         logger.info(message);
-        return response;
     }
 }
