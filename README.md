@@ -162,7 +162,7 @@ The logger depends on message properties added by the default Mule http componen
 processing is interrupted before some of these properties are set leading to missing log entry elements.
 
 E.g.: A requests for a path that has no associated endpoint will be terminated before any message processing is performed.
-In this case only the date, path and status (404 - Not Found) and content length will be logged. 
+In this case only the date, path, status (404 - Not Found) and content length will be logged. 
 Important data such as the remote host and HTTP method will be missing.
 
 [Apache 2.0]:                 http://www.apache.org/licenses/LICENSE-2.0.html
