@@ -7,6 +7,11 @@ and response messages.
 You can specify the log pattern yourself or use predefined patterns such as the [Apache combined log format] which is
 understood by most web log analysis tools.
 
+- [License](#license)
+- [Obtain](#obtain)
+- [Usage](#usage)
+- [Caveats](#caveats)
+
 ## License
 [Apache 2.0]
 
