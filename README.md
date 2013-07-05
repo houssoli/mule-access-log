@@ -19,7 +19,7 @@ Example dependency config:
 <dependency>
     <groupId>com.greenbird.mule</groupId>
     <artifactId>greenbird-mule-access-log</artifactId>
-    <version>1.0</version>
+    <version>2.0.0</version>
     <scope>runtime</scope>
 </dependency>
 ```
