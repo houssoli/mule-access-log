@@ -186,7 +186,7 @@ Important data such as the remote host and HTTP method will be missing.
 
 [1.0.0]:                      https://github.com/greenbird/mule-access-log/issues?milestone=2&state=closed
 [2.0.0]:                      https://github.com/greenbird/mule-access-log/issues?milestone=3&state=closed
-[2.1.0-SNAPSHOT]:             https://github.com/greenbird/mule-access-log/issues?milestone=1&state=all
+[2.1.0-SNAPSHOT]:             https://github.com/greenbird/mule-access-log/issues?milestone=1&state=closed
 [Apache 2.0]:                 http://www.apache.org/licenses/LICENSE-2.0.html
 [Apache combined log format]: http://httpd.apache.org/docs/1.3/logs.html#combined
 [Apache common log format]:   http://httpd.apache.org/docs/1.3/logs.html#common
