@@ -7,11 +7,18 @@ and response messages.
 You can specify the log pattern yourself or use predefined patterns such as the [Apache combined log format] which is
 understood by most web log analysis tools.
 
+Part of the [greenbird] Open Source Java [projects].
+
+Bugs, feature suggestions and help requests can be filed with the [issue-tracker].
+
+[![Build Status][build-badge]][build-link]
+
 ## Table of contents
 - [License](#license)
 - [Obtain](#obtain)
 - [Usage](#usage)
 - [Caveats](#caveats)
+- [History](#history)
 
 
 ## License
@@ -172,15 +179,27 @@ E.g.: A requests for a path that has no associated endpoint will be terminated b
 In this case only the date, path, status (404 - Not Found) and content length will be logged. 
 Important data such as the remote host and HTTP method will be missing.
 
+## History
+- [1.0.0]: Initial release.
+- [2.0.0]: Rewrite for robustness and capturing of more data. Not backwards compatible.
+- [2.1.0-SNAPSHOT]: Improved documentation.
+
+[1.0.0]:                      https://github.com/greenbird/mule-access-log/issues?milestone=2&state=closed
+[2.0.0]:                      https://github.com/greenbird/mule-access-log/issues?milestone=3&state=closed
+[2.1.0-SNAPSHOT]:             https://github.com/greenbird/mule-access-log/issues?milestone=1&state=all
 [Apache 2.0]:                 http://www.apache.org/licenses/LICENSE-2.0.html
 [Apache combined log format]: http://httpd.apache.org/docs/1.3/logs.html#combined
 [Apache common log format]:   http://httpd.apache.org/docs/1.3/logs.html#common
-[issues]:                     https://github.com/greenbird/mule-access-log/issues
+[build-badge]:                https://build.greenbird.com/job/mule-access-log/badge/icon
+[build-link]:                 https://build.greenbird.com/job/mule-access-log/
 [download]:                   http://search.maven.org/#search|ga|1|greenbird-mule-access-log
-[HTTP endpoints]:             www.mulesoft.org/documentation/display/current/HTTP+Transport+Reference
+[greenbird]:                  http://greenbird.com/
+[issue-tracker]:              https://github.com/greenbird/mule-access-log/issues
+[HTTP endpoints]:             http://www.mulesoft.org/documentation/display/current/HTTP+Transport+Reference
 [Maven]:                      http://maven.apache.org/
 [Mule ESB]:                   http://www.mulesoft.org/
 [Mule log configuration]:     http://www.mulesoft.org/documentation/display/current/Logging+With+Mule+ESB+3.x
 [PatternLayout]:              http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html
+[projects]:                   http://greenbird.github.io/
 [snapshot repository]:        https://oss.sonatype.org/content/repositories/snapshots/com/greenbird/mule/greenbird-mule-access-log
 
