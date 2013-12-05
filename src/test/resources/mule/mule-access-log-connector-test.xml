@@ -20,26 +20,25 @@
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:https="http://www.mulesoft.org/schema/mule/https"
       xmlns:mule-ss="http://www.mulesoft.org/schema/mule/spring-security"
-      xmlns:s="http://www.springframework.org/schema/beans"
+      xmlns:spring="http://www.springframework.org/schema/beans"
       xmlns:ss="http://www.springframework.org/schema/security"
       xsi:schemaLocation="
         http://www.mulesoft.org/schema/mule/core            http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/http            http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-        http://www.mulesoft.org/schema/mule/https            http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd
+        http://www.mulesoft.org/schema/mule/https           http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd
         http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd
         http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/security      http://www.springframework.org/schema/security/spring-security.xsd
       ">
 
-    <http:connector name="loggingHttpConnector">
-        <service-overrides messageReceiver="com.greenbird.mule.http.log.AccessLoggingHttpMessageReceiver"/>
-    </http:connector>
 
-    <https:connector name="loggingHttpsConnector" validateConnections="true">
-        <service-overrides messageReceiver="com.greenbird.mule.http.log.AccessLoggingHttpsMessageReceiver"/>
-        <https:tls-key-store path="server-keystore.jks" keyPassword="testPw" storePassword="testPw"/>
-    </https:connector>
+    <custom-connector name="loggingHttpConnector" class="com.greenbird.mule.http.log.AccessLoggingHttpConnector"/>
 
+    <custom-connector name="loggingHttpsConnector" class="com.greenbird.mule.http.log.AccessLoggingHttpsConnector">
+        <spring:property name="keyStore" value="server-keystore.jks"/>
+        <spring:property name="keyPassword" value="testPw"/>
+        <spring:property name="keyStorePassword" value="testPw"/>
+    </custom-connector>
 
     <flow name="test-flow">
         <http:inbound-endpoint address="http://localhost:6428/testPath"/>
@@ -85,7 +84,7 @@
         <mule-ss:delegate-security-provider name="memory-provider" delegate-ref="authenticationManager"/>
     </mule-ss:security-manager>
 
-    <s:beans>
+    <spring:beans>
         <ss:authentication-manager alias="authenticationManager">
             <ss:authentication-provider>
                 <ss:user-service id="userService">
@@ -93,5 +92,5 @@
                 </ss:user-service>
             </ss:authentication-provider>
         </ss:authentication-manager>
-    </s:beans>
+    </spring:beans>
 </mule>

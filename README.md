@@ -33,12 +33,12 @@ Example dependency config:
 <dependency>
     <groupId>com.greenbird.mule</groupId>
     <artifactId>greenbird-mule-access-log</artifactId>
-    <version>2.0.0</version>
+    <version>3.0.0</version>
     <scope>runtime</scope>
 </dependency>
 ```
 
-You can also [download] the jars directly if you need too.
+You can also [download] the jars directly if you need to.
 
 Snapshot builds are available from the Sonatype OSS [snapshot repository].
 
@@ -46,19 +46,56 @@ Include the jar as a runtime dependency for your project and you're ready to go.
 
 ## Usage
 
-### 1. Replace the HTTP message receiver
-Replace the the default HttpMessageReceiver with our subclass AccessLoggingHttpMessageReceiver.
+### 1. Replace the HTTP(S) message receiver or connector
+The access logging is plugged into Mule by configuring your HTTP(S) connector. 
+This will ensure that HTTP messages are logged to the `http.accesslog` category on the `INFO` level.
 
-This is done on the http connector level like this:
+There are two alternative ways to set this up.
+One alternative is simpler to configure but will not log requests for resources that are not found (404). 
+The other is potentially harder to configure, but will also log 404s.
+
+#### Alternative 1.1: Replace the HTTP(S) message receiver
+Configure a logging message receiver on the the standard HTTP or HTTPS connector. 
+
+This is simple to configure but requests for resources that are not found (HTTP status 404) will not be logged.
+
+Example configuration:
+
 ```xml
+<!-- HTTP -->
 <http:connector name="loggingHttpConnector">
     <service-overrides messageReceiver="com.greenbird.mule.http.log.AccessLoggingHttpMessageReceiver"/>
 </http:connector>
+
+<!-- HTTPS -->
+<https:connector name="loggingHttpsConnector">
+    <service-overrides messageReceiver="com.greenbird.mule.http.log.AccessLoggingHttpsMessageReceiver"/>
+</https:connector>
 ``` 
 
-This will ensure that the HTTP message is logged to the http.accesslog category on the INFO level.
+#### Alternative 1.2: Use a custom HTTP(S) connector
+Configure a custom logging HTTP or HTTPS connector. 
 
-Use the com.greenbird.mule.http.log.AccessLoggingHttpsMessageReceiver instead if you are working with the https connector.
+This will log requests for resources that are not found (HTTP status 404) but is potentially a bit harder to configure 
+than the message receiver alternative.
+
+If you need to set configuration values on your connector you now need to set them directly as Spring bean properties on 
+the connector instance. The namespace support from the standard connectors are not available in this scenario.
+
+Example configuration:
+
+```xml
+<!-- HTTP -->
+<custom-connector name="loggingHttpConnector" class="com.greenbird.mule.http.log.AccessLoggingHttpConnector"/>
+
+<!-- HTTPS -->
+<custom-connector name="loggingHttpsConnector" class="com.greenbird.mule.http.log.AccessLoggingHttpsConnector">
+    <spring:property name="keyStore" value="server-keystore.jks"/>
+    <spring:property name="keyPassword" value="testPw"/>
+    <spring:property name="keyStorePassword" value="testPw"/>
+</custom-connector>
+``` 
+
 
 ### 2. Configure the http.accesslog log category
 Update your [Mule log configuration] with a http.accesslog category that is written to a separate file.
@@ -176,17 +213,17 @@ The logger depends on message properties added by the default Mule http componen
 processing is interrupted before some of these properties are set leading to missing log entry elements.
 
 E.g.: A requests for a path that has no associated endpoint will be terminated before any message processing is performed.
-In this case only the date, path, status (404 - Not Found) and content length will be logged. 
-Important data such as the remote host and HTTP method will be missing.
+In this case only the date, method, path, query and status (404 - Not Found) will be logged. 
+Important data such as the remote host and user agent will be missing.
 
 ## History
+- [3.0.0]: Rewrite for Mule 3.4.x support. Not backwards compatible. Improved documentation. Note that this is the first version to support Mule 3.4.x.
+- [2.0.0]: Rewrite for robustness and capturing of more data. Not backwards compatible. Note that this is the last version to support Mule 3.3.x.
 - [1.0.0]: Initial release.
-- [2.0.0]: Rewrite for robustness and capturing of more data. Not backwards compatible.
-- [2.1.0-SNAPSHOT]: Improved documentation.
 
 [1.0.0]:                      https://github.com/greenbird/mule-access-log/issues?milestone=2&state=closed
 [2.0.0]:                      https://github.com/greenbird/mule-access-log/issues?milestone=3&state=closed
-[2.1.0-SNAPSHOT]:             https://github.com/greenbird/mule-access-log/issues?milestone=1&state=closed
+[3.0.0]:                      https://github.com/greenbird/mule-access-log/issues?milestone=1&state=closed
 [Apache 2.0]:                 http://www.apache.org/licenses/LICENSE-2.0.html
 [Apache combined log format]: http://httpd.apache.org/docs/1.3/logs.html#combined
 [Apache common log format]:   http://httpd.apache.org/docs/1.3/logs.html#common

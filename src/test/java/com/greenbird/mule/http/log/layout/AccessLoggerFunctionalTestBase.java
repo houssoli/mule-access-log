@@ -42,27 +42,28 @@ import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
-public class AccessLoggerPatternLayoutFunctionalTest extends FunctionalTestCase {
-    private static final String BASE_URL = "http://localhost:6428";
-    private static final String HTTPS_BASE_URL = "https://localhost:6429";
-    private static final String CLIENT_IP = "127.0.0.1";
-    private static final String REFERRER = "http://test.com";
-    private static final String AGENT = "Commons-HttpClient";
-    private static final String GET = "GET";
-    private static final int OK = 200;
-    private static final int UNAUTHORIZED = 401;
-    private static final String QUERY = "?parameter=value";
-    private static final int NOT_FOUND = 404;
-    private static final int SYSTEM_ERROR = 500;
+public class AccessLoggerFunctionalTestBase extends FunctionalTestCase {
+    protected static final String BASE_URL = "http://localhost:6428";
+    protected static final String HTTPS_BASE_URL = "https://localhost:6429";
+    protected static final String CLIENT_IP = "127.0.0.1";
+    protected static final String REFERRER = "http://test.com";
+    protected static final String AGENT = "Commons-HttpClient";
+    protected static final String GET = "GET";
+    protected static final int OK = 200;
+    protected static final int UNAUTHORIZED = 401;
+    protected static final String QUERY = "?parameter=value";
+    protected static final int NOT_FOUND = 404;
+    protected static final int SYSTEM_ERROR = 500;
 
-    private TestLogAppender testLogAppender;
+    protected TestLogAppender testLogAppender;
     private HttpClient httpClient;
 
     @Override
     protected String getConfigResources() {
-        return "mule/mule-access-log-test.xml";
+        return "mule/mule-access-log-connector-test.xml";
     }
 
     @Before
@@ -90,6 +91,15 @@ public class AccessLoggerPatternLayoutFunctionalTest extends FunctionalTestCase 
         String actualContent = httpRequest(path, OK);
         assertThat(actualContent, is(expectedContent));
         assertOnLogEntry(path, actualContent.length());
+    }
+
+    @Test
+    public void httpRequest_multipleRequest_allRequestsLogged() {
+        String path = "/testPath";
+        httpRequest(path, OK);
+        httpRequest(path, OK);
+        httpRequest(path, OK);
+        assertThat(testLogAppender.getLoggingEvents(), hasSize(3));
     }
 
     @Test
@@ -128,14 +138,6 @@ public class AccessLoggerPatternLayoutFunctionalTest extends FunctionalTestCase 
     }
 
     @Test
-    public void httpRequest_resourceNotFound_onlyPathStatusAndContentLengthAreLogged() {
-        String path = "/unknown";
-        String actualContent = httpRequest(path, NOT_FOUND);
-        assertThat(actualContent, containsString("Cannot bind"));
-        assertOnLogEntry("-", "-", "-", path, "", NOT_FOUND, String.valueOf(actualContent.length()), "-", "-");
-    }
-
-    @Test
     public void httpRequest_exceptionInFLow_allValuesLoggedExceptUser() {
         String path = "/exceptionPath";
         String actualContent = httpRequest(path, SYSTEM_ERROR);
@@ -153,19 +155,20 @@ public class AccessLoggerPatternLayoutFunctionalTest extends FunctionalTestCase 
     }
 
     @Test
-    public void httpsRequest_resourceNotFound_onlyPathStatusAndContentLengthAreLogged() {
-        String path = "/unknown";
-        String actualContent = httpsRequest(path, NOT_FOUND);
-        assertThat(actualContent, containsString("Cannot bind"));
-        assertOnLogEntry("-", "-", "-", path, "", NOT_FOUND, String.valueOf(actualContent.length()), "-", "-");
+    public void httpsRequest_multipleRequest_allRequestsLogged() {
+        String path = "/httpsPath";
+        httpsRequest(path, OK);
+        httpsRequest(path, OK);
+        httpsRequest(path, OK);
+        assertThat(testLogAppender.getLoggingEvents(), hasSize(3));
     }
 
-    private void assertOnLogEntry(String path, int contentLength) {
+    protected void assertOnLogEntry(String path, int contentLength) {
         assertOnLogEntry(CLIENT_IP, "-", GET, path, QUERY, OK, String.valueOf(contentLength), REFERRER, AGENT);
     }
 
-    private void assertOnLogEntry(String clientIp, String userId, final String method, final String path, String query, int status,
-                                  String contentLength, String referrer, String agent) {
+    protected void assertOnLogEntry(String clientIp, String userId, final String method, final String path, String query, int status,
+                                    String contentLength, String referrer, String agent) {
         LogEntry entry = parseLogEntry();
 
         assertThat(entry.getUserId(), is(userId));
@@ -194,15 +197,15 @@ public class AccessLoggerPatternLayoutFunctionalTest extends FunctionalTestCase 
         return new LogEntry(accessLine);
     }
 
-    private String httpRequest(String path, int expectedStatus) {
+    protected String httpRequest(String path, int expectedStatus) {
         return httpRequest(BASE_URL + path + QUERY, expectedStatus, null, null);
     }
 
-    private String httpsRequest(String path, int expectedStatus) {
+    protected String httpsRequest(String path, int expectedStatus) {
         return httpRequest(HTTPS_BASE_URL + path + QUERY, expectedStatus, null, null);
     }
 
-    private String httpRequest(String url, int expectedStatus, String username, String password) {
+    protected String httpRequest(String url, int expectedStatus, String username, String password) {
         GetMethod method = new GetMethod(url);
         method.setDoAuthentication(true);
         method.addRequestHeader(HttpConstants.HEADER_REFERER, REFERRER);

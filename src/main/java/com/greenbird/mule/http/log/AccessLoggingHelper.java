@@ -1,35 +1,70 @@
 package com.greenbird.mule.http.log;
 
-import org.mule.api.MuleEvent;
-import org.mule.api.MuleException;
-import org.mule.api.processor.MessageProcessor;
+import org.mule.DefaultMuleMessage;
+import org.mule.api.MuleContext;
+import org.mule.api.MuleMessage;
+import org.mule.api.transformer.Transformer;
+import org.mule.api.transformer.TransformerException;
+import org.mule.transformer.AbstractMessageTransformer;
+import org.mule.transport.http.HttpConnector;
+import org.mule.transport.http.HttpConstants;
 import org.mule.transport.http.HttpResponse;
+import org.mule.transport.http.RequestLine;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.LinkedList;
+import java.util.List;
 
 class AccessLoggingHelper {
     private AccessLogger accessLogger = new AccessLogger();
     private RequestPropertiesRetainer requestPropertiesRetainer = new RequestPropertiesRetainer();
 
-    MessageProcessor getListener(final MessageProcessor originalListener) {
-        return new MessageProcessor() {
+    List<Transformer> addInboundTransformer(List<Transformer> originalTransformers) {
+        return addTransformer(originalTransformers, new AbstractMessageTransformer() {
             @Override
-            public MuleEvent process(MuleEvent event) throws MuleException {
-                requestPropertiesRetainer.retainRequestProperties(event.getMessage());
-                return originalListener.process(event);
+            public Object transformMessage(MuleMessage message, String outputEncoding) throws TransformerException {
+                retainRequestProperties(message);
+                return message.getPayload();
             }
-        };
+        });
     }
 
-    // This is the normal way we capture the response message.
-    // The receiver apply its default transformers after the execution flow has returned.
-    void logAfterApply(MuleEvent event) {
-        accessLogger.log(event.getMessage());
+    List<Transformer> addResponseTransformer(List<Transformer> originalTransformers) {
+        return addTransformer(originalTransformers, new AbstractMessageTransformer() {
+            @Override
+            public Object transformMessage(MuleMessage message, String outputEncoding) throws TransformerException {
+                accessLogger.log(message);
+                return message.getPayload();
+            }
+        });
     }
 
-    // This is where we log the response message if the normal execution flow 
-    // is interrupted or can not be started (e.g. if the requested resource can not be found).
-    HttpResponse logTransformedReply(HttpResponse httpResponse, MuleEvent event) {
-        event.getMessage().setPayload(httpResponse);
-        accessLogger.log(event.getMessage());
-        return httpResponse;
+    void logNotFound(RequestLine requestLine, MuleContext muleContext) {
+        HttpResponse httpResponse = new HttpResponse();
+        httpResponse.setStatusLine(requestLine.getHttpVersion(), HttpConstants.SC_NOT_FOUND);
+
+        DefaultMuleMessage message = new DefaultMuleMessage(httpResponse, muleContext);
+        message.setInboundProperty(HttpConnector.HTTP_METHOD_PROPERTY, requestLine.getMethod());
+
+        try {
+            URI uri = new URI(requestLine.getUri());
+            message.setInboundProperty(HttpConnector.HTTP_REQUEST_PATH_PROPERTY, uri.getPath());
+            message.setInboundProperty(HttpConnector.HTTP_QUERY_STRING, uri.getQuery());
+        } catch (URISyntaxException e) {
+            e.printStackTrace(); // we swallow this that should never happen
+        }
+        accessLogger.log(message);
     }
+
+    void retainRequestProperties(MuleMessage message) {
+        requestPropertiesRetainer.retainRequestProperties(message);
+    }
+
+    private List<Transformer> addTransformer(List<Transformer> originalTransformers, Transformer transformerToAppend) {
+        List<Transformer> appendedList = new LinkedList<Transformer>(originalTransformers);
+        appendedList.add(transformerToAppend);
+        return appendedList;
+    }
+
 }
