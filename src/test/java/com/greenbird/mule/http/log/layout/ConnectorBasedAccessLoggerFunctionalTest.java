@@ -36,6 +36,14 @@ public class ConnectorBasedAccessLoggerFunctionalTest extends AccessLoggerFuncti
     }
 
     @Test
+    public void httpRequest_noQuery_onlyMethodPathAndStatusAreLogged() {
+        String path = "/unknown";
+        String actualContent = httpRequest(HTTPS_BASE_URL + path, NOT_FOUND, null, null);
+        assertThat(actualContent, containsString("Cannot bind"));
+        assertOnLogEntry("-", "-", GET, path, "", NOT_FOUND, "-", "-", "-");
+    }
+
+    @Test
     public void httpsRequest_resourceNotFound_onlyMethodPathQueryAndStatusAreLogged() {
         String path = "/unknown";
         String actualContent = httpsRequest(path, NOT_FOUND);

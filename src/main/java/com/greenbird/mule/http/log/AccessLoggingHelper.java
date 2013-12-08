@@ -16,6 +16,8 @@ import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.springframework.util.StringUtils.hasText;
+
 class AccessLoggingHelper {
     private AccessLogger accessLogger = new AccessLogger();
     private RequestPropertiesRetainer requestPropertiesRetainer = new RequestPropertiesRetainer();
@@ -50,7 +52,9 @@ class AccessLoggingHelper {
         try {
             URI uri = new URI(requestLine.getUri());
             message.setInboundProperty(HttpConnector.HTTP_REQUEST_PATH_PROPERTY, uri.getPath());
-            message.setInboundProperty(HttpConnector.HTTP_QUERY_STRING, uri.getQuery());
+            if (hasText(uri.getQuery())) {
+                message.setInboundProperty(HttpConnector.HTTP_QUERY_STRING, uri.getQuery());
+            }
         } catch (URISyntaxException e) {
             e.printStackTrace(); // we swallow this that should never happen
         }
